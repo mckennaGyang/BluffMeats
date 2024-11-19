@@ -1,62 +1,80 @@
-import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { BehaviorSubject, Observable, tap } from "rxjs";
-import { User } from "../models/user.model";
+import { Injectable } from "@angular/core"
+import { HttpClient, HttpHeaders } from "@angular/common/http"
+import { BehaviorSubject, Observable, tap } from "rxjs"
+// import { User } from "../models/user.model"
 
-interface LoginResponse {
-  user: User;
-  token: string;
+interface User {
+  id: number
+  name: string
+  email: string
+  role: string
+}
+
+interface AuthResponse {
+  message: string
+  user: User
 }
 
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
-  private readonly API_URL = "http://localhost/api/endpoints";
+  private currentUserSubject = new BehaviorSubject<User | null>(null)
+  public currentUser$ = this.currentUserSubject.asObservable()
+  private apiUrl = "http://localhost/api"
   headers = new HttpHeaders({
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
-  });
+  })
 
   constructor(private http: HttpClient) {
-    const storedUser = localStorage.getItem("currentUser");
-    if (storedUser) {
-      this.currentUserSubject.next(JSON.parse(storedUser));
-    }
+    this.currentUserSubject = new BehaviorSubject<User | null>(
+      JSON.parse(localStorage.getItem("currentUser") || "null")
+    )
+    this.currentUser$ = this.currentUserSubject.asObservable()
   }
 
-  login(email: string, password: string): Observable<LoginResponse> {
+  public get currentUserValue(): User | null {
+    return this.currentUserSubject.value
+  }
+
+  login(email: string, password: string) {
     return this.http
-      .post<LoginResponse>(`${this.API_URL}/login.php`, {
+      .post<AuthResponse>(`${this.apiUrl}/endpoints/login.php`, {
         email,
         password,
-      }, { headers: this.headers })
+      })
       .pipe(
         tap((response) => {
-          // Store the token
-          localStorage.setItem("token", response.token);
-          // Store the user
-          localStorage.setItem("currentUser", JSON.stringify(response.user));
-          // Update the BehaviorSubject
-          this.currentUserSubject.next(response.user);
+          if (response.user) {
+            localStorage.setItem("currentUser", JSON.stringify(response.user))
+            this.currentUserSubject.next(response.user)
+          }
         })
-      );
+      )
   }
 
-  logout(): void {
-    // Clear stored data
-    localStorage.removeItem("token");
-    localStorage.removeItem("currentUser");
-    this.currentUserSubject.next(null);
+  register(name: string, email: string, password: string) {
+    return this.http.post<AuthResponse>(
+      `${this.apiUrl}/endpoints/register.php`,
+      {
+        name,
+        email,
+        password,
+      }
+    )
+  }
+
+  logout() {
+    localStorage.removeItem("currentUser")
+    this.currentUserSubject.next(null)
   }
 
   isAdmin(): boolean {
-    return this.currentUserSubject.value?.role === "admin";
+    return this.currentUserSubject.value?.role === "admin"
   }
 
-  getToken(): string | null {
-    return localStorage.getItem("token");
+  isLoggedIn(): boolean {
+    return !!this.currentUserSubject.value
   }
 }

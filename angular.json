@@ -32,7 +32,10 @@
             "outputPath": "dist/demo",
             "polyfills": ["zone.js"],
             "scripts": [],
-            "styles": ["src/global_styles.css"],
+            "styles": [
+              "src/global_styles.css",
+              "node_modules/ngx-toastr/toastr.css"
+            ],
             "tsConfig": "tsconfig.app.json"
           }
         },
@@ -47,8 +50,8 @@
             }
           },
           "options": {
-    "proxyConfig": "proxy.conf.json"
-  },
+            "proxyConfig": "proxy.conf.json"
+          },
           "defaultConfiguration": "development"
         }
       },

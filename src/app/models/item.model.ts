@@ -1,9 +1,9 @@
 export interface Item {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  stockLevel: number;
-  category: string;
-  imageUrl?: string;
+  id: number
+  name: string
+  description?: string
+  price: number
+  stock_level: number
+  category?: string
+  image_url?: string | null
 }

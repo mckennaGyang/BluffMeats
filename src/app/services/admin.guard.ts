@@ -1,6 +1,6 @@
-import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
-import { AuthService } from "./auth.service";
+import { Injectable } from "@angular/core"
+import { Router } from "@angular/router"
+import { AuthService } from "./auth.service"
 
 @Injectable({
   providedIn: "root",
@@ -10,10 +10,10 @@ export class AdminGuard {
 
   canActivate(): boolean {
     if (this.authService.isAdmin()) {
-      return true;
+      return true
     }
 
-    this.router.navigate(["/login"]);
-    return false;
+    this.router.navigate(["/"])
+    return false
   }
 }

@@ -15,21 +15,19 @@ include_once '../models/user.php';
 
 $database = new Database();
 $db = $database->getConnection();
-
 $user = new User($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
 if (!empty($data->email) && !empty($data->password)) {
     $user->email = $data->email;
-
     $stmt = $user->login();
-    $num = $stmt->rowCount();
-
-    if ($num > 0) {
+    
+    if ($stmt && $stmt->rowCount() > 0) {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (password_verify($data->password, $row['password'])) {
+        
+        // Direct password comparison instead of using password_verify
+        if ($data->password === $row['password']) {
             http_response_code(200);
             echo json_encode(
                 array(
@@ -44,11 +42,11 @@ if (!empty($data->email) && !empty($data->password)) {
             );
         } else {
             http_response_code(401);
-            echo json_encode(array("message" => "Login failed."));
+            echo json_encode(array("message" => "Login failed. Invalid password."));
         }
     } else {
         http_response_code(401);
-        echo json_encode(array("message" => "Login failed."));
+        echo json_encode(array("message" => "Login failed. User not found."));
     }
 } else {
     http_response_code(400);
