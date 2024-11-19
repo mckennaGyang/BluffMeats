@@ -21,6 +21,7 @@ import { RegisterComponent } from "./app/components/auth/register.component"
 import { CheckoutComponent } from "./app/components/cart/checkout.component"
 import { provideAnimations } from "@angular/platform-browser/animations"
 import { provideToastr } from "ngx-toastr"
+import { BackToTopComponent } from "./app/components/back-to-top/back-to-top.component"
 
 const routes: Routes = [
   { path: "store", component: StoreComponent },
@@ -38,11 +39,17 @@ const routes: Routes = [
 @Component({
   selector: "app-root",
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, ChatbotComponent],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    RouterLink,
+    ChatbotComponent,
+    BackToTopComponent,
+  ],
   template: `
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
       <div class="container">
-        <a class="navbar-brand" routerLink="/store">{{ name }}</a>
+        <a class="navbar-brand fs-2 fw-bold" routerLink="/store">{{ name }}</a>
         <div class="navbar-nav">
           <a class="nav-link" routerLink="/store">Store</a>
           <a class="nav-link" routerLink="/cart">Cart</a>
@@ -61,10 +68,11 @@ const routes: Routes = [
     </nav>
     <router-outlet></router-outlet>
     <app-chatbot></app-chatbot>
+    <app-back-to-top></app-back-to-top>
   `,
 })
 export class App {
-  name = "Bluff Meats"
+  name = "BOBBYS TECH"
   isAdmin$ = this.authService.currentUser$.pipe(
     map((user) => user?.role === "admin")
   )
