@@ -1,6 +1,6 @@
 /* Import Bootstrap CSS */
-@import 'bootstrap/dist/css/bootstrap.min.css';
-@import 'bootstrap-icons/font/bootstrap-icons.css';
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
 
 /* Custom styles */
 body {
@@ -17,4 +17,11 @@ body {
 
 .card:hover {
   transform: translateY(-5px);
+}
+
+.max-w-10 {
+  max-width: 25%;
+  background-color: hsl(210, 17%, 94%);
+  border-radius: 1rem;
+  padding: 2rem;
 }

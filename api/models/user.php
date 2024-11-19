@@ -16,60 +16,55 @@ class User
         $this->conn = $db;
     }
 
-    public function login()
-    {
+    public function login() {
         try {
-            // Modified query to match exact table structure
             $query = "SELECT id, email, password, name, role, created_at 
-                     FROM " . $this->table_name . "
+                     FROM " . $this->table_name . " 
                      WHERE email = :email 
                      LIMIT 1";
-
+                     
             $stmt = $this->conn->prepare($query);
-
-            // Sanitize email
+            
             $this->email = htmlspecialchars(strip_tags($this->email));
-
             $stmt->bindParam(":email", $this->email);
-
-            if (!$stmt->execute()) {
-                error_log("Login query failed: " . implode(" ", $stmt->errorInfo()));
-                return false;
-            }
-
+            
+            $stmt->execute();
             return $stmt;
+            
         } catch (PDOException $e) {
             error_log("Database error in login(): " . $e->getMessage());
             return false;
         }
     }
 
-    public function create()
-    {
+    public function create() {
         try {
             $query = "INSERT INTO " . $this->table_name . "
                     SET
+                        name = :name,
                         email = :email,
                         password = :password,
-                        name = :name,
-                        role = :role";
-
+                        role = :role,
+                        created_at = NOW()";
+    
             $stmt = $this->conn->prepare($query);
-
-            // Sanitize inputs
-            $this->email = htmlspecialchars(strip_tags($this->email));
+    
+            // Sanitize input
             $this->name = htmlspecialchars(strip_tags($this->name));
+            $this->email = htmlspecialchars(strip_tags($this->email));
+            $this->password = htmlspecialchars(strip_tags($this->password));
             $this->role = htmlspecialchars(strip_tags($this->role));
-
-            // Hash the password
-            $password_hash = password_hash($this->password, PASSWORD_BCRYPT);
-
-            $stmt->bindParam(":email", $this->email);
-            $stmt->bindParam(":password", $password_hash);
+    
+            // Bind parameters
             $stmt->bindParam(":name", $this->name);
+            $stmt->bindParam(":email", $this->email);
+            $stmt->bindParam(":password", $this->password);
             $stmt->bindParam(":role", $this->role);
-
-            return $stmt->execute();
+    
+            if ($stmt->execute()) {
+                return true;
+            }
+            return false;
         } catch (PDOException $e) {
             error_log("Database error in create(): " . $e->getMessage());
             return false;
